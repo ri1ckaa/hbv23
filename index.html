@@ -23,7 +23,7 @@
             overflow-x: hidden;
         }
 
-        /* ---------- Летающие сердечки (прозрачность только после середины) ---------- */
+        /* Летающие сердечки (равномерно, исчезают после середины) */
         .heart {
             position: fixed;
             bottom: 0;
@@ -33,7 +33,6 @@
             animation: floatHeart linear infinite;
         }
 
-        /* Ключевые кадры: до 50% пути opacity = 0.9, после 50% плавно уменьшается до 0 */
         @keyframes floatHeart {
             0% {
                 transform: translateY(0) translateX(0);
@@ -41,15 +40,14 @@
             }
             50% {
                 transform: translateY(-50vh) translateX(10px);
-                opacity: 0.9;   /* до середины яркость не меняется */
+                opacity: 0.9;
             }
             100% {
                 transform: translateY(-100vh) translateX(20px);
-                opacity: 0;      /* к концу полностью прозрачное */
+                opacity: 0;
             }
         }
 
-        /* ---------- Окно с текстом ---------- */
         .message-box {
             position: relative;
             z-index: 20;
@@ -70,20 +68,17 @@
             color: #c2185b;
             margin-bottom: 0.8rem;
         }
-
         .second-line {
             font-size: 1.3rem;
             color: #1a1a1a;
             margin: 0.5rem 0;
         }
-
         .third-line {
             font-size: 1rem;
             color: #555555;
             margin: 0.5rem 0 1.8rem 0;
             white-space: nowrap;
         }
-
         .start-btn {
             background: #c2185b;
             border: none;
@@ -98,19 +93,20 @@
             font-family: 'Comic Sans MS', 'cursive', sans-serif;
             letter-spacing: 1px;
         }
-
         .start-btn:active {
             transform: translateY(3px);
             box-shadow: 0 2px 0 #7b0f3a;
         }
 
+        /* Адаптация для телефонов — фраза "Привет любимый!" теперь в одну строку */
         @media (max-width: 480px) {
             .third-line {
                 font-size: 0.85rem;
                 white-space: normal;
             }
             .first-line {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+                white-space: nowrap;
             }
             .second-line {
                 font-size: 1rem;
@@ -122,9 +118,7 @@
     </style>
 </head>
 <body>
-
     <div id="hearts-container"></div>
-
     <div class="message-box">
         <div class="first-line">💗 Привет, любимый! 💗</div>
         <div class="second-line">Я сделала это специально для тебя.</div>
@@ -133,52 +127,36 @@
     </div>
 
     <script>
+        // Летающие сердечки
         function createHearts() {
             const container = document.getElementById('hearts-container');
             const heartSymbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '♥️'];
-            const heartCount = 45;  // достаточно для равномерного заполнения
-
-            // Чтобы сердечки не собирались в одном месте, разбиваем ширину экрана на heartCount частей
-            // и в каждой части размещаем одно сердечко со случайным смещением внутри своего сектора.
+            const heartCount = 45;
             for (let i = 0; i < heartCount; i++) {
                 const heart = document.createElement('div');
                 heart.classList.add('heart');
-                
-                const randomHeart = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
-                heart.textContent = randomHeart;
-                
-                // размер от 0.8rem до 2.2rem
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
                 const size = 0.8 + Math.random() * 1.4;
                 heart.style.fontSize = size + 'rem';
-                
-                // ---- РАВНОМЕРНОЕ РАСПРЕДЕЛЕНИЕ ПО ГОРИЗОНТАЛИ ----
-                // делим ширину на heartCount частей, каждому сердечку назначаем левую позицию внутри своей части
                 const sectorWidth = 100 / heartCount;
                 const leftBase = i * sectorWidth;
-                // случайное смещение внутри сектора (от 0 до sectorWidth), но не вылезая за границы
                 const offset = Math.random() * sectorWidth;
                 let left = leftBase + offset;
-                // гарантируем, что left не больше 100%
                 if (left > 100) left = 100;
                 heart.style.left = left + '%';
-                
-                // длительность полёта: от 8 до 20 секунд
                 const duration = 8 + Math.random() * 12;
                 heart.style.animationDuration = duration + 's';
-                
-                // задержка старта: равномерно распределяем от 0 до 8 секунд
                 heart.style.animationDelay = (Math.random() * 8) + 's';
-                
                 container.appendChild(heart);
             }
         }
-
         window.addEventListener('DOMContentLoaded', createHearts);
-        
+
+        // Переход на вторую страницу
         const btn = document.getElementById('gameBtn');
         btn.addEventListener('click', function() {
-    window.location.href = 'game.html';
-});
+            window.location.href = 'game.html';
+        });
     </script>
 </body>
 </html>
