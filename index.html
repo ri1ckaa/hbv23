@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Сюрприз для любимого ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffe0f0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'cursive', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ---------- Летающие сердечки (прозрачность только после середины) ---------- */
+        .heart {
+            position: fixed;
+            bottom: 0;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatHeart linear infinite;
+        }
+
+        /* Ключевые кадры: до 50% пути opacity = 0.9, после 50% плавно уменьшается до 0 */
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(10px);
+                opacity: 0.9;   /* до середины яркость не меняется */
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;      /* к концу полностью прозрачное */
+            }
+        }
+
+        /* ---------- Окно с текстом ---------- */
+        .message-box {
+            position: relative;
+            z-index: 20;
+            background: rgba(255, 245, 250, 0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 48px;
+            padding: 2rem 2rem 2.2rem;
+            max-width: 600px;
+            width: 85%;
+            text-align: center;
+            box-shadow: 0 20px 35px rgba(255, 80, 120, 0.25), 0 5px 12px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 200, 210, 0.8);
+        }
+
+        .first-line {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin-bottom: 0.8rem;
+        }
+
+        .second-line {
+            font-size: 1.3rem;
+            color: #1a1a1a;
+            margin: 0.5rem 0;
+        }
+
+        .third-line {
+            font-size: 1rem;
+            color: #555555;
+            margin: 0.5rem 0 1.8rem 0;
+            white-space: nowrap;
+        }
+
+        .start-btn {
+            background: #c2185b;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #7b0f3a;
+            transition: 0.07s linear;
+            font-family: 'Comic Sans MS', 'cursive', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7b0f3a;
+        }
+
+        @media (max-width: 480px) {
+            .third-line {
+                font-size: 0.85rem;
+                white-space: normal;
+            }
+            .first-line {
+                font-size: 1.5rem;
+            }
+            .second-line {
+                font-size: 1rem;
+            }
+            .heart {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <div class="message-box">
+        <div class="first-line">💗 Привет, любимый! 💗</div>
+        <div class="second-line">Я сделала это специально для тебя.</div>
+        <div class="third-line">Пройди мини-игру, чтобы открыть свои сюрпризы :)</div>
+        <button class="start-btn" id="gameBtn">Начать игру</button>
+    </div>
+
+    <script>
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartSymbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '♥️'];
+            const heartCount = 45;  // достаточно для равномерного заполнения
+
+            // Чтобы сердечки не собирались в одном месте, разбиваем ширину экрана на heartCount частей
+            // и в каждой части размещаем одно сердечко со случайным смещением внутри своего сектора.
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                
+                const randomHeart = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.textContent = randomHeart;
+                
+                // размер от 0.8rem до 2.2rem
+                const size = 0.8 + Math.random() * 1.4;
+                heart.style.fontSize = size + 'rem';
+                
+                // ---- РАВНОМЕРНОЕ РАСПРЕДЕЛЕНИЕ ПО ГОРИЗОНТАЛИ ----
+                // делим ширину на heartCount частей, каждому сердечку назначаем левую позицию внутри своей части
+                const sectorWidth = 100 / heartCount;
+                const leftBase = i * sectorWidth;
+                // случайное смещение внутри сектора (от 0 до sectorWidth), но не вылезая за границы
+                const offset = Math.random() * sectorWidth;
+                let left = leftBase + offset;
+                // гарантируем, что left не больше 100%
+                if (left > 100) left = 100;
+                heart.style.left = left + '%';
+                
+                // длительность полёта: от 8 до 20 секунд
+                const duration = 8 + Math.random() * 12;
+                heart.style.animationDuration = duration + 's';
+                
+                // задержка старта: равномерно распределяем от 0 до 8 секунд
+                heart.style.animationDelay = (Math.random() * 8) + 's';
+                
+                container.appendChild(heart);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', createHearts);
+        
+        const btn = document.getElementById('gameBtn');
+        btn.addEventListener('click', function() {
+    window.location.href = 'game.html';
+});
+    </script>
+</body>
+</html>

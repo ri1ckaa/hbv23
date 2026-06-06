@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>С Днём Рождения! 🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffe0f0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'cursive', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 1rem;
+        }
+
+        /* Летающие сердечки (как на всех страницах) */
+        .heart {
+            position: fixed;
+            bottom: 0;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatHeart linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(10px);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Контент */
+        .content {
+            position: relative;
+            z-index: 20;
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 245, 250, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 1.8rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(255, 80, 120, 0.2);
+        }
+
+        /* Большой эмодзи */
+        .big-emoji {
+            font-size: 5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Заголовок малиновый */
+        .title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Окно с текстом */
+        .message-window {
+            background: rgba(255, 245, 250, 0.95);
+            border-radius: 48px;
+            padding: 1.8rem;
+            text-align: left;
+            box-shadow: 0 10px 20px rgba(255, 80, 120, 0.2);
+            border: 1px solid rgba(255, 200, 210, 0.8);
+            font-size: 1rem;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        /* Обычный текст внутри окна */
+        .message-window p {
+            margin-bottom: 0.8rem;
+        }
+
+        /* Последнее предложение "Люблю бесконечно." */
+        .love-line {
+            font-size: 1.3rem;   /* чуть больше основного */
+            font-weight: bold;
+            color: #c2185b;
+            text-align: center;
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+        }
+
+        /* Адаптация под телефоны */
+        @media (max-width: 550px) {
+            .big-emoji {
+                font-size: 3.5rem;
+            }
+            .title {
+                font-size: 1.6rem;
+            }
+            .message-window {
+                font-size: 0.9rem;
+                padding: 1.2rem;
+            }
+            .love-line {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+    <div class="content">
+        <div class="big-emoji">🎉</div>
+        <div class="title">С Днём Рождения!</div>
+
+        <div class="message-window">
+            <p>Желаю тебе не просто добиваться целей, а чувствовать себя счастливым здесь и сейчас. Пусть внутри всегда будет покой, а рядом — я и те, кто тебя по-настоящему любят и ценят.</p>
+            <p>Я смотрю на тебя и понимаю, как мне повезло быть рядом с тобой в этом отрезке твоей жизни. Ты делаешь мой мир уютнее, смешнее и светлее.</p>
+            <p>Сегодня твой день, и единственное желание, которое я хочу загадать — чтобы ты всегда позволял мне быть той, кто согревает тебя после тяжёлого дня. Ты — моя слабость и моя сила.</p>
+            <div class="love-line">Люблю бесконечно 💗</div>
+        </div>
+    </div>
+
+    <script>
+        // Летающие сердечки (такой же код)
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartSymbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '♥️'];
+            const heartCount = 45;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                const size = 0.8 + Math.random() * 1.4;
+                heart.style.fontSize = size + 'rem';
+                const sectorWidth = 100 / heartCount;
+                const leftBase = i * sectorWidth;
+                const offset = Math.random() * sectorWidth;
+                let left = leftBase + offset;
+                if (left > 100) left = 100;
+                heart.style.left = left + '%';
+                const duration = 8 + Math.random() * 12;
+                heart.style.animationDuration = duration + 's';
+                heart.style.animationDelay = (Math.random() * 8) + 's';
+                container.appendChild(heart);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', createHearts);
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Игра: Найди пары 🎁</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffe0f0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'cursive', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 1rem;
+        }
+
+        /* Летающие сердечки (как на предыдущих страницах) */
+        .heart {
+            position: fixed;
+            bottom: 0;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatHeart linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(10px);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 20;
+            max-width: 750px;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 245, 250, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(255, 80, 120, 0.2);
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin-bottom: 0.3rem;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #555555;
+            margin-bottom: 0.8rem;
+        }
+        .moves-counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Сетка 4x4 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            justify-items: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Карточка */
+        .card {
+            background: white;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 100px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+            transition: 0.2s;
+            border: 2px solid #ffb7c5;
+        }
+        /* Вопросительный знак */
+        .card .question {
+            display: block;
+            font-size: 2.5rem;
+            color: #aaa;
+            font-weight: bold;
+        }
+        .card .gift-emoji {
+            display: none;
+            font-size: 2.2rem;
+        }
+        /* Открытая карточка (показ эмодзи) */
+        .card.open {
+            background: rgba(255, 120, 120, 0.6);
+            cursor: default;
+        }
+        .card.open .question {
+            display: none;
+        }
+        .card.open .gift-emoji {
+            display: block;
+        }
+        /* Совпавшая пара */
+        .card.matched {
+            background: rgba(100, 200, 100, 0.7);
+            cursor: default;
+        }
+        .card.matched .question {
+            display: none;
+        }
+        .card.matched .gift-emoji {
+            display: block;
+        }
+
+        .congrats {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin: 1rem 0 0.5rem;
+            display: none;
+        }
+        .next-btn {
+            background: #c9a0ae;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f8e8ed;
+            border-radius: 60px;
+            cursor: not-allowed;
+            box-shadow: none;
+            font-family: 'Comic Sans MS', 'cursive', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.1s;
+            pointer-events: none;
+            margin-top: 10px;
+        }
+        .next-btn.active {
+            background: #c2185b;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #7b0f3a;
+            pointer-events: auto;
+        }
+        .next-btn.active:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7b0f3a;
+        }
+
+        @media (max-width: 550px) {
+            .card {
+                font-size: 1.8rem;
+            }
+            .card .question, .card .gift-emoji {
+                font-size: 1.8rem;
+            }
+            .main-title {
+                font-size: 1.4rem;
+            }
+            .game-grid {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+    <div class="content">
+        <div class="main-title">💗 Давай сыграем перед сюрпризом 💗</div>
+        <div class="subtitle">Найди все пары!</div>
+        <div class="moves-counter">Ходы: <span id="moveCount">0</span></div>
+
+        <div class="game-grid" id="gameGrid"></div>
+
+        <div class="congrats" id="congratsMsg">Молодец! 🎉 Все пары найдены</div>
+        <button class="next-btn" id="nextButton">Далее →</button>
+    </div>
+
+    <script>
+        // ------------- Летающие сердечки -------------
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartSymbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '♥️'];
+            const heartCount = 45;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                const size = 0.8 + Math.random() * 1.4;
+                heart.style.fontSize = size + 'rem';
+                const sectorWidth = 100 / heartCount;
+                const leftBase = i * sectorWidth;
+                const offset = Math.random() * sectorWidth;
+                let left = leftBase + offset;
+                if (left > 100) left = 100;
+                heart.style.left = left + '%';
+                const duration = 8 + Math.random() * 12;
+                heart.style.animationDuration = duration + 's';
+                heart.style.animationDelay = (Math.random() * 8) + 's';
+                container.appendChild(heart);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', createHearts);
+
+        // ------------- Игра "Найди пары" -------------
+        const gifts = ['🎂', '🧸', '💍', '🎁', '❤️', '🌹', '🐯', '🐁'];
+        let cardsArray = [];
+        let shuffledCards = [];
+        let firstIndex = null, secondIndex = null;
+        let lockBoard = false;
+        let moves = 0;
+        let matchedPairs = 0;
+        const totalPairs = gifts.length;
+
+        const gridContainer = document.getElementById('gameGrid');
+        const moveSpan = document.getElementById('moveCount');
+        const congratsDiv = document.getElementById('congratsMsg');
+        const nextBtn = document.getElementById('nextButton');
+
+        function initCards() {
+            let deck = [];
+            for (let i = 0; i < gifts.length; i++) {
+                deck.push({ id: i, value: gifts[i], matched: false });
+                deck.push({ id: i, value: gifts[i], matched: false });
+            }
+            // Перемешивание
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        function renderBoard() {
+            gridContainer.innerHTML = '';
+            shuffledCards.forEach((card, idx) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.classList.add('card');
+                if (card.matched) cardDiv.classList.add('matched');
+                const questionSpan = document.createElement('div');
+                questionSpan.classList.add('question');
+                questionSpan.textContent = '?';
+                const giftSpan = document.createElement('div');
+                giftSpan.classList.add('gift-emoji');
+                giftSpan.textContent = card.value;
+                cardDiv.appendChild(questionSpan);
+                cardDiv.appendChild(giftSpan);
+                cardDiv.addEventListener('click', () => onCardClick(idx));
+                gridContainer.appendChild(cardDiv);
+            });
+        }
+
+        function updateMoves() {
+            moveSpan.textContent = moves;
+        }
+
+        function checkGameComplete() {
+            if (matchedPairs === totalPairs) {
+                congratsDiv.style.display = 'block';
+                nextBtn.classList.add('active');
+            }
+        }
+
+        function resetUnmatched() {
+            if (firstIndex !== null && secondIndex !== null) {
+                const card1 = shuffledCards[firstIndex];
+                const card2 = shuffledCards[secondIndex];
+                if (!card1.matched && !card2.matched) {
+                    const div1 = gridContainer.children[firstIndex];
+                    const div2 = gridContainer.children[secondIndex];
+                    div1.classList.remove('open');
+                    div2.classList.remove('open');
+                }
+            }
+            firstIndex = null;
+            secondIndex = null;
+            lockBoard = false;
+        }
+
+        function onCardClick(clickedIndex) {
+            if (lockBoard) return;
+            const card = shuffledCards[clickedIndex];
+            if (card.matched) return;
+            if (firstIndex === clickedIndex) return;
+            if (secondIndex !== null) return;
+
+            const currentDiv = gridContainer.children[clickedIndex];
+            // Если уже открыта (например, повторный клик по открытой)
+            if (currentDiv.classList.contains('open')) return;
+
+            // Открываем карточку
+            currentDiv.classList.add('open');
+
+            if (firstIndex === null) {
+                firstIndex = clickedIndex;
+            } else if (secondIndex === null && firstIndex !== clickedIndex) {
+                secondIndex = clickedIndex;
+                moves++;
+                updateMoves();
+
+                const card1 = shuffledCards[firstIndex];
+                const card2 = shuffledCards[secondIndex];
+                if (card1.value === card2.value) {
+                    // Совпадение
+                    card1.matched = true;
+                    card2.matched = true;
+                    matchedPairs++;
+                    const div1 = gridContainer.children[firstIndex];
+                    const div2 = gridContainer.children[secondIndex];
+                    div1.classList.remove('open');
+                    div1.classList.add('matched');
+                    div2.classList.remove('open');
+                    div2.classList.add('matched');
+                    firstIndex = null;
+                    secondIndex = null;
+                    checkGameComplete();
+                } else {
+                    // Не совпали – блокируем и через 800 мс переворачиваем обратно
+                    lockBoard = true;
+                    setTimeout(() => {
+                        resetUnmatched();
+                    }, 800);
+                }
+            }
+        }
+
+        function newGame() {
+            const deck = initCards();
+            shuffledCards = deck;
+            firstIndex = null;
+            secondIndex = null;
+            lockBoard = false;
+            moves = 0;
+            matchedPairs = 0;
+            updateMoves();
+            congratsDiv.style.display = 'none';
+            nextBtn.classList.remove('active');
+            renderBoard();
+        }
+
+        newGame();
+
+        nextBtn.addEventListener('click', function() {
+    if (matchedPairs === totalPairs) {
+        window.location.href = 'page4.html';
+    } else {
+        alert('Сначала найди все пары!');
+    }
+});
+    </script>
+</body>
+</html>

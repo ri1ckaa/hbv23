@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Почему я тебя люблю 💖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #ffe0f0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'cursive', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 1rem;
+        }
+
+        .heart {
+            position: fixed;
+            bottom: 0;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatHeart linear infinite;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(10px);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 20;
+            max-width: 1100px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #c2185b;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #555555;
+            margin-bottom: 1rem;
+        }
+
+        .counter {
+            font-size: 1rem;
+            background: rgba(255, 245, 250, 0.8);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 40px;
+            margin-bottom: 1.5rem;
+            color: #c2185b;
+            font-weight: bold;
+        }
+
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .reason-card {
+            background: rgba(255, 245, 250, 0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 32px;
+            padding: 1.2rem 1rem;
+            box-shadow: 0 10px 20px rgba(255, 80, 120, 0.2);
+            border: 1px solid rgba(255, 200, 210, 0.8);
+            text-align: left;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .heart-icon {
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s;
+            opacity: 0.5;
+            filter: blur(0.5px);
+            display: inline-block;
+        }
+        .heart-icon.active {
+            opacity: 1;
+            filter: none;
+            transform: scale(1.1);
+            cursor: default;
+        }
+        .heart-icon:not(.active):hover {
+            transform: scale(1.15);
+            opacity: 0.8;
+        }
+
+        .reason-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        .reason-detail {
+            font-size: 0.95rem;
+            color: #555555;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px dashed #ffb7c5;
+            display: none;
+        }
+        .reason-detail.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .next-btn {
+            background: #c9a0ae;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #f8e8ed;
+            border-radius: 60px;
+            cursor: not-allowed;
+            box-shadow: none;
+            font-family: 'Comic Sans MS', 'cursive', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.1s;
+            pointer-events: none;
+        }
+        .next-btn.active-btn {
+            background: #c2185b;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #7b0f3a;
+            pointer-events: auto;
+        }
+        .next-btn.active-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #7b0f3a;
+        }
+
+        @media (max-width: 700px) {
+            .reasons-grid {
+                grid-template-columns: 1fr;
+            }
+            .main-title {
+                font-size: 1.6rem;
+            }
+            .heart-icon {
+                font-size: 1.8rem;
+            }
+            .reason-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="hearts-container"></div>
+    <div class="content">
+        <div class="main-title">💗 Почему я тебя люблю 💗</div>
+        <div class="subtitle">Нажми на каждое сердечко, чтобы раскрыть причину</div>
+        <!-- ИЗМЕНЕНИЕ: сердечко со стрелой вместо обычного -->
+        <div class="counter" id="counter">💘 Осталось открыть: 9</div>
+
+        <div class="reasons-grid">
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="1">♡</span>
+                    <span class="reason-text">Твоя верность</span>
+                </div>
+                <div class="reason-detail" data-detail="1">Я знаю, что ты всегда на моей стороне</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="2">♡</span>
+                    <span class="reason-text">Твоя нежность</span>
+                </div>
+                <div class="reason-detail" data-detail="2">Ты даришь мне любовь каждый день</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="3">♡</span>
+                    <span class="reason-text">Твой юмор</span>
+                </div>
+                <div class="reason-detail" data-detail="3">Ты всегда можешь рассмешить меня</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="4">♡</span>
+                    <span class="reason-text">Твоя надёжность</span>
+                </div>
+                <div class="reason-detail" data-detail="4">Я всегда знаю, что могу положиться на тебя</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="5">♡</span>
+                    <span class="reason-text">Твоя забота</span>
+                </div>
+                <div class="reason-detail" data-detail="5">Ты всегда думаешь обо мне и моём комфорте</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="6">♡</span>
+                    <span class="reason-text">Твоя сила духа</span>
+                </div>
+                <div class="reason-detail" data-detail="6">Ты проходишь через трудности и становишься только сильнее</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="7">♡</span>
+                    <span class="reason-text">Твоя красота</span>
+                </div>
+                <div class="reason-detail" data-detail="7">Твоя улыбка делает мой мир ярче</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="8">♡</span>
+                    <span class="reason-text">Твоё сердце</span>
+                </div>
+                <div class="reason-detail" data-detail="8">Ты умеешь любить так, как никто другой</div>
+            </div>
+            <div class="reason-card">
+                <div class="card-header">
+                    <span class="heart-icon" data-id="9">♡</span>
+                    <span class="reason-text">Наше будущее</span>
+                </div>
+                <div class="reason-detail" data-detail="9">Я хочу провести его с тобой</div>
+            </div>
+        </div>
+
+        <button class="next-btn" id="nextButton">Далее →</button>
+    </div>
+
+    <script>
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartSymbols = ['❤️', '💖', '💗', '💓', '💕', '💞', '💘', '♥️'];
+            const heartCount = 45;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                const size = 0.8 + Math.random() * 1.4;
+                heart.style.fontSize = size + 'rem';
+                const sectorWidth = 100 / heartCount;
+                const leftBase = i * sectorWidth;
+                const offset = Math.random() * sectorWidth;
+                let left = leftBase + offset;
+                if (left > 100) left = 100;
+                heart.style.left = left + '%';
+                const duration = 8 + Math.random() * 12;
+                heart.style.animationDuration = duration + 's';
+                heart.style.animationDelay = (Math.random() * 8) + 's';
+                container.appendChild(heart);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', createHearts);
+
+        const heartIcons = document.querySelectorAll('.heart-icon');
+        const nextButton = document.getElementById('nextButton');
+        const counterSpan = document.getElementById('counter');
+        const total = heartIcons.length;
+        let openedCount = 0;
+
+        function updateCounterAndButton() {
+            const remaining = total - openedCount;
+            // ИЗМЕНЕНИЕ: теперь сердечко со стрелой 💘
+            counterSpan.innerHTML = `💘 Осталось открыть: ${remaining}`;
+            if (openedCount === total) {
+                nextButton.classList.add('active-btn');
+            } else {
+                nextButton.classList.remove('active-btn');
+            }
+        }
+
+        heartIcons.forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (this.classList.contains('active')) return;
+
+                this.textContent = '💘';
+                this.classList.add('active');
+
+                const card = this.closest('.reason-card');
+                const detailDiv = card.querySelector('.reason-detail');
+                if (detailDiv) detailDiv.classList.add('show');
+
+                openedCount++;
+                updateCounterAndButton();
+            });
+        });
+
+        nextButton.addEventListener('click', function() {
+    if (openedCount === total) {
+        window.location.href = 'page3.html';
+    } else {
+        alert(`Осталось открыть ещё ${total - openedCount} сердечек 💕`);
+    }
+});
+    </script>
+</body>
+</html>
