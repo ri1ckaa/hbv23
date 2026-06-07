@@ -25,7 +25,6 @@
             padding: 2rem 1rem;
         }
 
-        /* Летающие сердечки */
         .heart {
             position: fixed;
             bottom: 0;
@@ -59,11 +58,10 @@
             background: rgba(255, 245, 250, 0.7);
             backdrop-filter: blur(4px);
             border-radius: 60px;
-            padding: 1.8rem 1.5rem;
+            padding: 1rem 1.5rem 1.8rem 1.5rem;
             box-shadow: 0 10px 25px rgba(255, 80, 120, 0.2);
         }
 
-        /* Первая фраза: одна строка */
         .main-title {
             font-size: 1.6rem;
             font-weight: bold;
@@ -72,7 +70,6 @@
             white-space: nowrap;
         }
 
-        /* Поляроидная рамка с малиновым рассеянным свечением */
         .polaroid {
             background: white;
             padding: 12px 12px 20px 12px;
@@ -100,25 +97,22 @@
             display: block;
         }
 
-        /* Подпись под фото: ЧЁРНЫЙ цвет, две строки, ширина как у фото */
         .polaroid-caption {
             font-size: 0.95rem;
-            color: #1a1a1a;        /* ЧЁРНЫЙ (изменено) */
+            color: #1a1a1a;
             margin-top: 12px;
             text-align: center;
             width: 280px;
             line-height: 1.4;
         }
 
-        /* Фраза поздравления: чёрная, без принудительной одной строки */
         .black-text {
             font-size: 1.2rem;
-            color: #1a1a1a;         /* ЧЁРНЫЙ (как было до последнего изменения) */
+            color: #1a1a1a;
             font-weight: bold;
             margin: 1.5rem 0;
         }
 
-        /* Кнопка "Далее" */
         .next-btn {
             background: #c2185b;
             border: none;
@@ -141,10 +135,12 @@
             box-shadow: 0 2px 0 #7b0f3a;
         }
 
+        /* Медиа-запрос для телефонов — рамка длиннее */
         @media (max-width: 550px) {
             .main-title {
-                font-size: 1.2rem;
-                white-space: normal;
+                font-size: 0.95rem;
+                white-space: nowrap;
+                margin-bottom: 1.5rem;
             }
             .photo-container {
                 width: 220px;
@@ -157,6 +153,9 @@
             .black-text {
                 font-size: 1rem;
             }
+            .content {
+                padding: 1.2rem 1rem 1.8rem 1rem;  /* увеличено: сверху 1.2rem, снизу 1.8rem */
+            }
         }
     </style>
 </head>
@@ -167,7 +166,6 @@
 
         <div class="polaroid">
             <div class="photo-container">
-                <!-- Замени "your-photo.jpg" на имя твоего файла (896x1200) -->
                 <img src="love.jpg" alt="Наше фото">
             </div>
             <div class="polaroid-caption">
@@ -206,9 +204,9 @@
         window.addEventListener('DOMContentLoaded', createHearts);
 
         const nextBtn = document.getElementById('nextButton');
-nextBtn.addEventListener('click', function() {
-    window.location.href = 'page5.html';
-});
+        nextBtn.addEventListener('click', function() {
+            window.location.href = 'page5.html';
+        });
     </script>
 </body>
 </html>
